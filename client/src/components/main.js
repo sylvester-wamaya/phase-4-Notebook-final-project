@@ -1,3 +1,6 @@
+
+
+
 const Main = ({ activeNote, onUpdateNote }) => {
     const onEditField = (field, value) => {
       onUpdateNote({
@@ -7,6 +10,31 @@ const Main = ({ activeNote, onUpdateNote }) => {
       });
     };
     if (!activeNote) return <div className="no-active-note">No Active Note</div>;
+    const [notes, setNotes] =useState([])
+    useEffect(() =>{
+        axios
+        .get("http://localhost:3000/notes")
+        .then(res =>{
+            setNotes(res.notes)
+
+        })
+        .catch(err =>{
+            console.log(err)
+        })
+
+}
+    
+)
+
+const removeNotes = id  =>(
+    setNotes(notes.filter(note => note.id !== id))
+)
+
+const deleteNote = async id =>{
+    await fetch('http://localhost:3000/notes/${id}', {method:"DELETE"})
+    removeNotes(id);
+}
+       
     return (
         <div className="app-main">
           <div className="app-main-note-edit">

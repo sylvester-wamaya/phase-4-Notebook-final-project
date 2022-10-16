@@ -1,19 +1,20 @@
 import { useState, useEffect } from "react";
-
+import axios from 'axios';
 function App() {
-  const [count, setCount] = useState(0);
+  const [ setNotes] =useState([])
+        useEffect(() =>{
+            axios
+            .get("http://localhost:3000/notes")
+            .then(res =>{
+                setNotes(res.notes)
 
-  useEffect(() => {
-    fetch("/hello")
-      .then((r) => r.json())
-      .then((data) => setCount(data.count));
-  }, []);
+            })
+            .catch(err =>{
+                console.log(err)
+            })
 
-  return (
-    <div className="App">
-      <h1>Page Count: {count}</h1>
-    </div>
-  );
-}
-
+    }
+        
+    )
+  }
 export default App;
