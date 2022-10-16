@@ -1,20 +1,55 @@
-import { useState, useEffect } from "react";
-import axios from 'axios';
+import { useEffect, useState } from "react";
+import Main from "./components/main";
+import Sidebar from "./components/sidebar";
+
 function App() {
-  const [ setNotes] =useState([])
-        useEffect(() =>{
-            axios
-            .get("http://localhost:3000/notes")
-            .then(res =>{
-                setNotes(res.notes)
+    const [notes, setNotes] = useState(
+        localStorage.notes ? JSON.parse(localStorage.notes) : []
+    );
+    const [activeNote, setActiveNote] = useState(false);
+    useEffect(() => {
+        localStorage.setItem("notes", JSON.stringify(notes));
+    }, [notes]);
+    const onAddNote = () => {
+        const newNote = {
+            // id: uuid(),
+            title: "Untitled Note",
+            body: "",
+            lastModified: Date.now(),
+        };
+        setNotes([newNote, ...notes]);
+        setActiveNote(newNote.id);
+    };
 
-            })
-            .catch(err =>{
-                console.log(err)
-            })
+    const onDeleteNote = (noteId) => {
+        setNotes(notes.filter(({ id }) => id !== noteId));
+    };
+    const onUpdateNote = (updatedNote) => {
+        const updatedNotesArr = notes.map((note) => {
+            if (note.id === updatedNote.id) {
+                return updatedNote;
+            }
+            return note;
+        });
 
-    }
-        
-    )
+        setNotes(updatedNotesArr);
+    };
+
+    const getActiveNote = () => {
+        return notes.find(({ id }) => id === activeNote);
+    };
+    return (
+      <div className="App">
+        <Sidebar
+          notes={notes}
+          onAddNote={onAddNote}
+          onDeleteNote={onDeleteNote}
+          activeNote={activeNote}
+          setActiveNote={setActiveNote}
+        />
+        <Main activeNote={getActiveNote()} onUpdateNote={onUpdateNote} />
+      </div>
+    );
   }
-export default App;
+  
+  export default App;
